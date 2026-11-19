@@ -26,7 +26,6 @@ combineTrees tree1@(Node key1 rank1 children1) tree2@(Node key2 rank2 children2)
 
 --------------------------------------------------------------
 -- PART II
-
 extractMin :: Ord a => BinHeap a -> a
 extractMin 
   = undefined
@@ -128,6 +127,3 @@ h7 = [Node 4 3 [Node 4 2 [Node 12 1 [Node 16 0 []],
                           Node 5 0 []],
                 Node 6 1 [Node 8 0 []],
                 Node 10 0 []]]
-
-
-

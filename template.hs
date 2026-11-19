@@ -82,19 +82,30 @@ binSort items = sort heap
 -- Takes in a heap and if contans rank r then 1 else 0
 -- Heap is order ascending order by rank left to right
 toBinary :: BinHeap a -> [Int]
-toBinary [] = [0]
-toBinary (t:[]) = 1 : (take r $ repeat 0)
-    where r = rank t
-toBinary heap = (1 : (take diff $ repeat 0)) ++ toBinary (t2:ts)
+toBinary heap = toBinary' heap (-1)
     where
-        (t1:t2:ts) = reverse heap
-        r1 = rank t1
-        r2 = rank t2
-        diff = r1 - r2
+        toBinary' :: BinHeap a -> Int -> [Int]
+        toBinary' [] _ = []
+        toBinary' (t:ts) prevr = toBinary' ts r ++ (1 : (take (r - prevr - 1) $ repeat 0))
+            where r = rank t
 
 binarySum :: [Int] -> [Int] -> [Int]
-binarySum
-  = undefined
+binarySum bin1 bin2 = reverse . binSummy (reverse bin1) (reverse bin2) 0
+    where
+        fullAdder :: Int -> Int -> Int -> (Int, Int)
+        fullAdder b1 b2 carry_in = let summed = b1 + b2 + carry_in 
+        in case summed of
+            0 -> (0, 0)
+            1 -> (1, 0)
+            2 -> (0, 1)
+            3 -> (1, 1)
+
+        binSummy :: [Int] -> [Int] -> Int -> [Int]
+        binSummy [] [] _ = []
+        binSummy [] bin carry = binSummy bin [carry]
+        binSummy bin [] carry = binSummy bin [carry]
+        binSummy (b:bs) (b':bs') carry_in = sum : (binSummy bs bs' carry_out)
+            where (sum, carry_out) fullAdder b b' carry_in
 
 ------------------------------------------------------
 -- Some sample trees...

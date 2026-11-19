@@ -79,9 +79,18 @@ binSort items = sort heap
 --------------------------------------------------------------
 -- PART III
 
+-- Takes in a heap and if contans rank r then 1 else 0
+-- Heap is order ascending order by rank left to right
 toBinary :: BinHeap a -> [Int]
-toBinary
-  = undefined
+toBinary [] = [0]
+toBinary (t:[]) = 1 : (take r $ repeat 0)
+    where r = rank t
+toBinary heap = (1 : (take diff $ repeat 0)) ++ toBinary (t2:ts)
+    where
+        (t1:t2:ts) = reverse heap
+        r1 = rank t1
+        r2 = rank t2
+        diff = r1 - r2
 
 binarySum :: [Int] -> [Int] -> [Int]
 binarySum

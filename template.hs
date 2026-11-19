@@ -27,8 +27,12 @@ combineTrees tree1@(Node key1 rank1 children1) tree2@(Node key2 rank2 children2)
 --------------------------------------------------------------
 -- PART II
 extractMin :: Ord a => BinHeap a -> a
-extractMin 
-  = undefined
+extractMin (t:ts) = key $ foldl' minTree t ts
+    where
+        minTree :: Ord a => BinTree a -> BinTree a -> BinTree a
+        minTree t1 t2
+            | key t2 < key t1 = t2
+            | otherwise = t1
 
 mergeHeaps :: Ord a => BinHeap a -> BinHeap a -> BinHeap a
 mergeHeaps 

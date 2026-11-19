@@ -6,21 +6,23 @@ data BinTree a = Node a Int (BinHeap a)
 --------------------------------------------------------------
 -- PART I
 
+-- Gets the key of a binomial tree
 key :: BinTree a -> a
-key
-  = undefined
+key (Node key _ _) = key
 
+-- Gets the rank of a binomial tree
 rank :: BinTree a -> Int
-rank
-  = undefined
+rank (Node _ rank _) = rank
 
+-- Gets the children of a binomial tree
 children :: BinTree a -> [BinTree a]
-children
-  = undefined
+children (Node _ _ children) = children
 
+-- Combines two binomial trees
 combineTrees :: Ord a => BinTree a -> BinTree a -> BinTree a
-combineTrees 
-  = undefined
+combineTrees tree1@(Node key1 rank1 children1) tree2@(Node key2 rank2 children2)
+    | key1 < key2 = Node key1 (rank2 + 1) (tree2 : children1)
+    | otherwise = Node key2 (rank2 + 1) (tree1 : children2)
 
 --------------------------------------------------------------
 -- PART II

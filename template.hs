@@ -26,25 +26,39 @@ combineTrees tree1@(Node key1 rank1 children1) tree2@(Node key2 rank2 children2)
 
 --------------------------------------------------------------
 -- PART II
+
+-- My helper for finding the minimum tree
+minTree :: Ord a => BinTree a -> BinTree a -> BinTree a
+minTree t1 t2
+    | key t2 < key t1 = t2
+    | otherwise = t1
+
+-- Extracts the min value
 extractMin :: Ord a => BinHeap a -> a
 extractMin (t:ts) = key $ foldl' minTree t ts
-    where
-        minTree :: Ord a => BinTree a -> BinTree a -> BinTree a
-        minTree t1 t2
-            | key t2 < key t1 = t2
-            | otherwise = t1
 
+-- Merges two heaps
 mergeHeaps :: Ord a => BinHeap a -> BinHeap a -> BinHeap a
-mergeHeaps 
-  = undefined
+mergeHeaps [] h = h
+mergeHeaps h [] = h
+mergeHeaps h@(t:ts) h'@(t':ts')
+    | r < r' = t : mergeHeaps ts h'
+    | r' < r = t' : mergeHeaps ts' h
+    | otherwise = mergeHeaps [combineTrees t t'] $ mergeHeaps ts ts'
+        where
+            r = rank t
+            r' = rank t'
 
+-- Inserts a singleton tree with the value
 insert :: Ord a => a -> BinHeap a -> BinHeap a
-insert 
-  = undefined
+insert value = mergeHeaps [Node value 0 []]
 
 deleteMin :: Ord a => BinHeap a -> BinHeap a
-deleteMin 
-  = undefined
+deleteMin heap@(t:ts) = mergeHeaps h' new_heap
+    where
+        min_tree = foldl' minTree t ts
+        h' = reverse $ children min_tree
+        new_heap = filter (/=min_tree) heap
 
 remove :: Eq a => a -> BinHeap a -> BinHeap a
 remove
@@ -55,8 +69,12 @@ removeMin
   = undefined
 
 binSort :: Ord a => [a] -> [a]
-binSort 
-  = undefined
+binSort items = sort heap
+    where
+        heap = foldl' (flip insert) [] items
+        sort :: Ord a => BinHeap a -> [a]
+        sort [] = []
+        sort heap = extractMin heap : sort (deleteMin heap)
 
 --------------------------------------------------------------
 -- PART III

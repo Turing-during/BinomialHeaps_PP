@@ -85,6 +85,7 @@ toBinary heap = toBinary' heap (-1)
             where r = rank t
 
 -- Sums two binary numbers
+-- Apparently can do this without reverse but cba rn
 binarySum :: [Int] -> [Int] -> [Int]
 binarySum bin1 bin2 = reverse $ binSummy (reverse bin1) (reverse bin2) 0
     where

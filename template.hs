@@ -47,6 +47,7 @@ mergeHeaps h@(t:ts) h'@(t':ts')
 insert :: Ord a => a -> BinHeap a -> BinHeap a
 insert value = mergeHeaps [Node value 0 []]
 
+-- Deletes the minimum from a binomial heap
 deleteMin :: Ord a => BinHeap a -> BinHeap a
 deleteMin heap = mergeHeaps (reverse $ children minTree) rest
     where
@@ -60,6 +61,7 @@ removeMin (t:ts)
     | otherwise = (t', t : ts')
         where (t', ts') = removeMin ts
 
+-- Sorts a list using binomial heaps
 binSort :: Ord a => [a] -> [a]
 binSort items = sort heap
     where
@@ -82,6 +84,7 @@ toBinary heap = toBinary' heap (-1)
         toBinary' (t:ts) prevr = toBinary' ts r ++ (1 : replicate (r - prevr - 1) 0)
             where r = rank t
 
+-- Sums two binary numbers
 binarySum :: [Int] -> [Int] -> [Int]
 binarySum bin1 bin2 = reverse $ binSummy (reverse bin1) (reverse bin2) 0
     where

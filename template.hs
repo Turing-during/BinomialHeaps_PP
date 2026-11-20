@@ -27,15 +27,9 @@ combineTrees tree1@(Node key1 rank1 children1) tree2@(Node key2 rank2 children2)
 --------------------------------------------------------------
 -- PART II
 
--- My helper for finding the minimum tree
-minTree :: Ord a => BinTree a -> BinTree a -> BinTree a
-minTree t1 t2
-    | key t2 < key t1 = t2
-    | otherwise = t1
-
 -- Extracts the min value
 extractMin :: Ord a => BinHeap a -> a
-extractMin (t:ts) = key $ foldl' minTree t ts
+extractMin = key . fst . removeMin
 
 -- Merges two heaps
 mergeHeaps :: Ord a => BinHeap a -> BinHeap a -> BinHeap a
@@ -54,19 +48,17 @@ insert :: Ord a => a -> BinHeap a -> BinHeap a
 insert value = mergeHeaps [Node value 0 []]
 
 deleteMin :: Ord a => BinHeap a -> BinHeap a
-deleteMin heap@(t:ts) = mergeHeaps h' new_heap
+deleteMin heap = mergeHeaps (reverse $ children minTree) rest
     where
-        min_tree = foldl' minTree t ts
-        h' = reverse $ children min_tree
-        new_heap = filter (/=min_tree) heap
+        (minTree, rest) = removeMin heap
 
-remove :: Eq a => a -> BinHeap a -> BinHeap a
-remove
-  = undefined
-
+-- Returns minimum tree and leftover heap with tree removed
 removeMin :: Ord a => BinHeap a -> (BinTree a, BinHeap a)
-removeMin
-  = undefined
+removeMin [t] = (t, [])
+removeMin (t:ts)
+    | key t <= key t' = (t, ts)
+    | otherwise = (t', t : ts')
+        where (t', ts') = removeMin ts
 
 binSort :: Ord a => [a] -> [a]
 binSort items = sort heap
@@ -82,30 +74,33 @@ binSort items = sort heap
 -- Takes in a heap and if contans rank r then 1 else 0
 -- Heap is order ascending order by rank left to right
 toBinary :: BinHeap a -> [Int]
+toBinary [] = [0]
 toBinary heap = toBinary' heap (-1)
     where
         toBinary' :: BinHeap a -> Int -> [Int]
         toBinary' [] _ = []
-        toBinary' (t:ts) prevr = toBinary' ts r ++ (1 : (take (r - prevr - 1) $ repeat 0))
+        toBinary' (t:ts) prevr = toBinary' ts r ++ (1 : replicate (r - prevr - 1) 0)
             where r = rank t
 
 binarySum :: [Int] -> [Int] -> [Int]
-binarySum bin1 bin2 = reverse . binSummy (reverse bin1) (reverse bin2) 0
+binarySum bin1 bin2 = reverse $ binSummy (reverse bin1) (reverse bin2) 0
     where
         fullAdder :: Int -> Int -> Int -> (Int, Int)
-        fullAdder b1 b2 carry_in = let summed = b1 + b2 + carry_in 
-        in case summed of
-            0 -> (0, 0)
-            1 -> (1, 0)
-            2 -> (0, 1)
-            3 -> (1, 1)
+        fullAdder b1 b2 cIn = 
+            case (b1 + b2 + cIn) of
+                0 -> (0, 0)
+                1 -> (1, 0)
+                2 -> (0, 1)
+                3 -> (1, 1)
 
         binSummy :: [Int] -> [Int] -> Int -> [Int]
-        binSummy [] [] _ = []
-        binSummy [] bin carry = binSummy bin [carry]
-        binSummy bin [] carry = binSummy bin [carry]
-        binSummy (b:bs) (b':bs') carry_in = sum : (binSummy bs bs' carry_out)
-            where (sum, carry_out) fullAdder b b' carry_in
+        binSummy [] [] 0 = []
+        binSummy [] [] cIn = [cIn]
+        binSummy [] bin cIn = binSummy bin [0] cIn
+        binSummy bin [] cIn = binSummy bin [0] cIn
+        binSummy (b:bs) (b':bs') cIn = sum : (binSummy bs bs' cOut)
+            where 
+                (sum, cOut) = fullAdder b b' cIn
 
 ------------------------------------------------------
 -- Some sample trees...
